@@ -1,11 +1,14 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button } from 'react-native-paper';
+import { Link } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type Facing = 'back' | 'front';
 
-export default function ExpoQRScanner() {
+export default function QRScanner() {
+
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState('back' as Facing);
   const [torch, setTorch] = useState(false);
@@ -22,7 +25,9 @@ export default function ExpoQRScanner() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button mode="contained" onPress={requestPermission} style={{ width: '60%', alignSelf: 'center' }}>
+          Grant Permission
+        </Button>
       </View>
     );
   }
@@ -32,7 +37,7 @@ export default function ExpoQRScanner() {
   }
 
   function toggleTorch() {
-    setTorch(current => (current === false ? true : false));
+    setTorch(current => !current);
   }
 
   function isValidQR(qr: string) {
@@ -65,7 +70,7 @@ export default function ExpoQRScanner() {
             <View style={styles.qrFrameMarginBottom}>
               <View style={styles.cameraButtonContainer}>
                 <TouchableOpacity style={styles.cameraButton} onPress={toggleTorch}>
-                  {torch?<MaterialCommunityIcons name="flash-off" size={30} color="white" />:<MaterialCommunityIcons name="flash" size={30} color="white" />}
+                  {torch?<MaterialCommunityIcons name="flash" size={30} color="white" />:<MaterialCommunityIcons name="flash-off" size={30} color="white" />}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
                   <MaterialCommunityIcons name="camera-flip" size={30} color={'white'} />
@@ -76,11 +81,21 @@ export default function ExpoQRScanner() {
         </View>
         <View style={styles.actionContainer}>
           <Text style={styles.text}>{QR}</Text>
-          <Button 
-            title="Confirm Number" 
-            onPress={() => setQR('')}
-            disabled={!validQR}
-          />
+          <Link 
+            href={{ pathname: '../', params: { number: validQR ? QR : '' } }} 
+            style={{ alignSelf: 'center' }} asChild>
+            <Button 
+              icon="arrow-right-bold-box-outline" 
+              mode="contained" 
+              onPress={() => {
+                setQR('');
+                setValidQR(false);
+              }}
+              disabled={!validQR} 
+              >
+              Confirm number
+            </Button>
+          </Link>
         </View>
       </CameraView>
     </View>
@@ -151,9 +166,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     height: '30%',
-    backgroundColor: 'rgb(30 41 59)',
-    paddingLeft: '10%',
-    paddingRight: '10%',
+    backgroundColor: 'black',
     paddingBottom: '10%',
   },
   text: {

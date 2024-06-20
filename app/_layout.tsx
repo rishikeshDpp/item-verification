@@ -30,8 +30,10 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="QRScan" options={{title: 'Scan any QR code'}} />
-        <Stack.Screen name="Camera" options={{title: 'Take a picture'}} />
+        <Stack.Screen name="Dashboard" options={{ headerShown: false }} />
+        <Stack.Screen name="QRScanner" options={{title: 'Scan QR code'}} />
+        <Stack.Screen name="Camera" options={{title: 'Take a Picture'}} />
+        <Stack.Screen name="Recorder" options={{title: 'Take a Video'}} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
