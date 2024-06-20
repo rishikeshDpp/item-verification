@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, View, Text, Button, Pressable } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text } from 'react-native';
 import { Link } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -11,6 +11,11 @@ export default function HomeScreen() {
             <Link href="/QRScan">
                 <View className='h-[100px] text-white border border-white p-2 rounded-lg flex justify-center items-center'>
                     <MaterialCommunityIcons name="qrcode-scan" size={40} color="white" /><Text className='text-white text-2xl'>Scan</Text>
+                </View>
+            </Link>
+            <Link href="/Camera">
+                <View className='h-[100px] text-white border border-white p-2 rounded-lg flex justify-center items-center'>
+                  <MaterialCommunityIcons name="camera" size={40} color="white" /><Text className='text-white text-2xl'>Scan</Text>
                 </View>
             </Link>
         </View>

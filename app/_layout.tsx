@@ -31,6 +31,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="QRScan" options={{title: 'Scan any QR code'}} />
+        <Stack.Screen name="Camera" options={{title: 'Take a picture'}} />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>

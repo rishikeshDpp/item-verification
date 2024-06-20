@@ -31,7 +31,7 @@ export default function ExpoQRScanner() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
-  function toggleFlash() {
+  function toggleTorch() {
     setTorch(current => (current === false ? true : false));
   }
 
@@ -64,7 +64,7 @@ export default function ExpoQRScanner() {
             </View>
             <View style={styles.qrFrameMarginBottom}>
               <View style={styles.cameraButtonContainer}>
-                <TouchableOpacity style={styles.cameraButton} onPress={toggleFlash}>
+                <TouchableOpacity style={styles.cameraButton} onPress={toggleTorch}>
                   {torch?<MaterialCommunityIcons name="flash-off" size={30} color="white" />:<MaterialCommunityIcons name="flash" size={30} color="white" />}
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
