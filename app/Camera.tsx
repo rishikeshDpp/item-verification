@@ -1,37 +1,38 @@
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
-import { Video } from 'expo-av';
-import { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-import { IconButton, Button } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Link, useLocalSearchParams } from 'expo-router';
-import { SearchParamType, MediaUnitType } from './Dashboard';
+import { useState, useRef, useEffect, RefObject } from 'react';
+import { View } from 'react-native';
+import { Button } from 'react-native-paper';
+import { useLocalSearchParams } from 'expo-router';
+
+import PictureViewComponent from '@/components/CameraComponents/PictureViewComponent';
+import VideoViewComponent from '@/components/CameraComponents/VideoViewComponent';
+import CameraPreviewComponent from '@/components/CameraComponents/CameraPreviewComponent';
+
+import { SearchParamType } from './Dashboard';
+import { CameraStyles } from '@/components/CameraComponents/PictureViewComponent';
 
 import { useItem } from '@/context/itemDataContext';
-
-type Facing = 'back' | 'front';
 
 export default function Camera() {
 
   const {mediaParam} = useLocalSearchParams<SearchParamType>();
   const {setImage1, setImage2, setVideo} = useItem();
 
-  const [cameraType, setCameraType] = useState('image' as MediaUnitType);
+  const cameraRef = useRef<CameraView>();
+  const cameraTypeRef = useRef<string>('picture' as string);
+
   const [camPermission, requestCamPermission] = useCameraPermissions();
   const [micPermission, requestMicPermission] = useMicrophonePermissions();
   const [cameraReady, setCameraReady] = useState(false);
-  const [facing, setFacing] = useState('back' as Facing);
-  const [torch, setTorch] = useState(false);
   const [photo, setPhoto] = useState('');
   const [videoTemp, setVideoTemp] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-  const cameraRef = useRef<CameraView>();
 
   useEffect(() => {
     if(mediaParam === 'image1' || mediaParam === 'image2') {
-      setCameraType('image');
+      cameraTypeRef.current = 'picture';
     } else if(mediaParam === 'video') {
-      setCameraType('video');
+      cameraTypeRef.current = 'video';
     }
   }, [mediaParam])
 
@@ -40,10 +41,10 @@ export default function Camera() {
     return <View />;
   }
 
-  if (!camPermission.granted || ( cameraType === 'video' && !micPermission.granted )) {
+  if (!camPermission.granted || ( cameraTypeRef.current === 'video' && !micPermission.granted )) {
     //  permissions are not granted yet.
     return (
-      <View style={styles.container}>
+      <View style={CameraStyles.container}>
         <Button onPress={permissions} icon="cellphone-lock" mode="elevated" style={{ margin: 70 }}>
           Allow access
         </Button>
@@ -53,15 +54,7 @@ export default function Camera() {
 
   function permissions() {
     if(!camPermission?.granted) requestCamPermission();
-    if(cameraType === 'video' && !micPermission?.granted) requestMicPermission();
-  }
-
-  function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  }
-
-  function toggleTorch() {
-    setTorch(current => !current);
+    if(cameraTypeRef.current === 'video' && !micPermission?.granted) requestMicPermission();
   }
 
   async function clickPhoto() {
@@ -72,8 +65,6 @@ export default function Camera() {
         const source = photo?.base64
         if(source) setPhoto("data:image/jpeg;base64," + source);
         else alert('Failed to get photo');
-
-        toggleTorch();
       }
     } else alert('Camera not ready');
   }
@@ -122,202 +113,42 @@ export default function Camera() {
   return (
     <>
     {
-      cameraType === 'image' ?
+      cameraTypeRef.current === 'picture' ?
 
         photo ?
-
-        <View style={styles.container}>
-          <Image source={{ uri: photo }} style={styles.camera} />
-          <View style={styles.cameraButtonContainer}>
-            <TouchableOpacity style={styles.cameraButton} >
-              <IconButton
-                icon="camera"
-                mode='contained-tonal'
-                size={40}
-                onPress={() => setPhoto('')}
-              />
-              <Text style={styles.cameraButtonLabel}>Retake</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cameraButton} >
-              <Link href="../" asChild >
-                <IconButton
-                  icon="arrow-right-circle"
-                  mode='contained-tonal'
-                  size={40}
-                  onPress={savePhoto}
-                />
-              </Link>
-              <Text style={styles.cameraButtonLabel}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
+        <CameraPreviewComponent 
+          cameraTypeRef={cameraTypeRef.current} 
+          source={photo} 
+          setMedia={setPhoto} 
+          saveFunc={savePhoto}
+        />
         :
-
-        <View style={styles.container}>
-          <CameraView 
-          ref={cameraRef as React.RefObject<CameraView>}
-          style={styles.camera} 
-          enableTorch={torch}
-          facing={facing}   
-          onCameraReady={() => setCameraReady(true)}
-          >
-            <View />
-          </CameraView>
-          <View style={styles.cameraButtonContainer}>
-            <TouchableOpacity style={styles.cameraButton} onPress={toggleTorch}>
-              {
-                torch ?
-                <IconButton
-                  icon="flash"
-                  mode='contained-tonal'
-                  size={30}
-                />
-                :
-                <IconButton
-                  icon="flash-off"
-                  mode='contained-tonal'
-                  size={30}
-                />
-              }
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cameraButton} onPress={clickPhoto}>
-              <IconButton
-                icon="camera"
-                mode='contained-tonal'
-                size={50}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
-              <IconButton
-                icon="camera-flip"
-                mode='contained-tonal'
-                size={30}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <PictureViewComponent 
+          cameraRef={cameraRef as RefObject<CameraView>} 
+          setCameraReady={setCameraReady} 
+          imageCapture={clickPhoto} 
+        />
       
       :
 
         videoTemp ?
-
-        <View style={styles.container}>
-            <Video source={{ uri: videoTemp }} style={styles.camera} shouldPlay={true} isLooping={true}/>
-            <View style={styles.cameraButtonContainer}>
-                <TouchableOpacity style={styles.cameraButton} onPress={() => setVideoTemp('')}>
-                  <IconButton
-                    icon="video"
-                    mode='contained-tonal'
-                    size={40}
-                  />
-                  <Text style={styles.cameraButtonLabel}>Retake</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.cameraButton} >
-                  <Link href="../" asChild >
-                    <IconButton
-                      icon="arrow-right-circle"
-                      mode='contained-tonal'
-                      size={40}
-                      onPress={saveVideo}
-                    />
-                  </Link>
-                  <Text style={styles.cameraButtonLabel}>Save</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-
+        <CameraPreviewComponent 
+          cameraTypeRef={cameraTypeRef.current} 
+          source={videoTemp} 
+          setMedia={setVideoTemp} 
+          saveFunc={saveVideo}
+        />
         :
 
-        <View style={styles.container}>
-          <CameraView 
-          ref={cameraRef as React.RefObject<CameraView>}
-          style={styles.camera} 
-          enableTorch={torch}
-          facing={facing}   
-          onCameraReady={() => setCameraReady(true)}
-          mode='video'
-          >
-            <View/>
-          </CameraView>
-          <View style={styles.cameraButtonContainer}>
-            <TouchableOpacity style={styles.cameraButton} onPress={toggleTorch}>
-              {
-                torch ?
-                <IconButton
-                  icon="flash"
-                  mode='contained-tonal'
-                  size={30}
-                />
-                :
-                <IconButton
-                  icon="flash-off"
-                  mode='contained-tonal'
-                  size={30}
-                />
-              }
-            </TouchableOpacity>
-            {
-                isRecording ?
-                <TouchableOpacity style={styles.cameraButton} onPress={stopVideoRecording}>
-                  <IconButton
-                    icon="stop-circle-outline"
-                    mode='contained-tonal'
-                    size={50}
-                    containerColor="red"
-                  />
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={styles.cameraButton} onPress={recordVideo}>
-                  <IconButton
-                    icon="record-circle-outline"
-                    mode='contained-tonal'
-                    size={50}
-                  />
-                </TouchableOpacity>
-            }
-            <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
-              <IconButton
-                icon="camera-flip"
-                mode='contained-tonal'
-                size={30}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <VideoViewComponent 
+          cameraRef={cameraRef as RefObject<CameraView>} 
+          setCameraReady={setCameraReady} 
+          isRecording={isRecording} 
+          recordVideo={recordVideo} 
+          stopVideoRecording={stopVideoRecording} 
+        />
 
       }
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  camera: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-  cameraButtonContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignContent: 'center',
-    height: '20%',
-    width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-
-  },
-  cameraButton: {
-    justifyContent: 'center',
-    alignContent: 'center',
-  },
-  cameraButtonLabel: {
-    color: 'white',
-    textAlign: 'center',
-  }
-});

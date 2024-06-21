@@ -1,26 +1,51 @@
-// import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native"
+import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native"
+import { Video } from "expo-av"
+import { IconButton } from "react-native-paper"
+import { Link } from "expo-router"
 
-// export default function CameraPreviewComponent() {
-//   return (
-//     <View style={styles.container}>
-//       <Image source={{ uri: photo }} style={styles.camera} />
-//       <View style={styles.cameraButtonContainer}>
-//         <TouchableOpacity style={styles.cameraButton} onPress={() => setPhoto('')}>
-//           <MaterialCommunityIcons name="camera" size={50} color="white" />
-//           <Text style={styles.cameraButtonLabel}>Retake</Text>
-//         </TouchableOpacity>
-//         <Link href="../" asChild >
-//           <TouchableOpacity style={styles.cameraButton} onPress={savePhoto}>
-//             <MaterialCommunityIcons name="arrow-right-circle" size={50} color="white" />
-//             <Text style={styles.cameraButtonLabel}>Save</Text>
-//           </TouchableOpacity>
-//         </Link>
-//       </View>
-//     </View>
-//   )
-// }
+import { CameraStyles } from "./PictureViewComponent"
 
-
-// const styles = StyleSheet.create({
-
-// })
+export default function CameraPreviewComponent({
+  cameraTypeRef,
+  source, 
+  setMedia, 
+  saveFunc
+}: {
+  cameraTypeRef: string,
+  source: string, 
+  setMedia: any,
+  saveFunc: any
+}) {
+  return (
+    <View style={CameraStyles.container}>
+      {
+        cameraTypeRef === 'picture' ? 
+        <Image source={{ uri: source }} style={CameraStyles.camera} />
+        :
+        <Video source={{ uri: source }} style={CameraStyles.camera} shouldPlay={true} isLooping={true}/>
+      }
+      <View style={CameraStyles.cameraButtonContainer}>
+        <TouchableOpacity style={CameraStyles.cameraButton} >
+          <IconButton
+            icon="camera"
+            mode='contained-tonal'
+            size={40}
+            onPress={()=>setMedia('')}
+          />
+          <Text style={CameraStyles.cameraButtonLabel}>Retake</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={CameraStyles.cameraButton} >
+          <Link href="../" asChild >
+            <IconButton
+              icon="arrow-right-circle"
+              mode='contained-tonal'
+              size={40}
+              onPress={saveFunc}
+            />
+          </Link>
+          <Text style={CameraStyles.cameraButtonLabel}>Save</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  )
+}
