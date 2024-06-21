@@ -5,6 +5,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+import { ItemProvider } from '@/context/itemDataContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -28,14 +29,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="Dashboard" options={{ headerShown: false }} />
-        <Stack.Screen name="QRScanner" options={{title: 'Scan QR code'}} />
-        <Stack.Screen name="Camera" options={{title: 'Take a Picture'}} />
-        <Stack.Screen name="Recorder" options={{title: 'Take a Video'}} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+      <ItemProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="Dashboard" options={{ headerShown: false }} />
+          <Stack.Screen name="QRScanner" options={{title: 'Scan QR code'}} />
+          <Stack.Screen name="Camera" options={{title: 'Camera'}} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ItemProvider>
     </ThemeProvider>
   );
 }

@@ -3,17 +3,25 @@ import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Video } from 'expo-av';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { SearchParamType } from './Dashboard';
+
+import { useItem } from '@/context/itemDataContext';
 
 type Facing = 'back' | 'front';
 
 export default function Recorder() {
+
+  const {mediaParam} = useLocalSearchParams<SearchParamType>();
+  const {setVideo} = useItem();
+
   const [camPermission, requestCamPermission] = useCameraPermissions();
   const [micPermission, requestMicPermission] = useMicrophonePermissions();
   const [cameraReady, setCameraReady] = useState(false);
   const [facing, setFacing] = useState('back' as Facing);
   const [torch, setTorch] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [video, setVideo] = useState('');
+  const [videoTemp, setVideoTemp] = useState('');
   const cameraRef = useRef<CameraView>();
 
   if (!camPermission || !micPermission) {
@@ -60,7 +68,7 @@ export default function Recorder() {
         videoPromise.then((video) => {
           setIsRecording(false);
           const source = video?.uri
-          if(source) setVideo(source);
+          if(source) setVideoTemp(source);
         }).catch((error) => {
             console.warn(error);
             setIsRecording(false);
@@ -76,22 +84,31 @@ export default function Recorder() {
     }
   }
 
+  function saveVideo() {
+    if(mediaParam === 'video') setVideo(videoTemp);
+    else alert('Invalid video param');
+    
+    setVideoTemp('');
+  }
+
   return (
     <>
       {
-        video ?
+        videoTemp ?
 
         <View style={styles.container}>
-            <Video source={{ uri: video }} style={styles.camera} shouldPlay={true} isLooping={true}/>
+            <Video source={{ uri: videoTemp }} style={styles.camera} shouldPlay={true} isLooping={true}/>
             <View style={styles.cameraButtonContainer}>
-                <TouchableOpacity style={styles.cameraButton} onPress={() => setVideo('')}>
+                <TouchableOpacity style={styles.cameraButton} onPress={() => setVideoTemp('')}>
                     <MaterialCommunityIcons name="video" size={50} color="white" />
                     <Text style={styles.cameraButtonLabel}>Retake</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.cameraButton} onPress={() => setVideo('')}>
+                <Link href="../" asChild >
+                  <TouchableOpacity style={styles.cameraButton} onPress={saveVideo}>
                     <MaterialCommunityIcons name="arrow-right-circle" size={50} color="white" />
                     <Text style={styles.cameraButtonLabel}>Save</Text>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </Link>
             </View>
         </View>
 

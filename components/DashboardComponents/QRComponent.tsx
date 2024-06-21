@@ -9,6 +9,7 @@ import { useItem } from '@/context/itemDataContext';
 export default function ScanQRComponent() {
 
   const {phoneNumber} = useItem();
+  const numberParam = 'QRNumber'
   
   return (
     <>
@@ -26,7 +27,7 @@ export default function ScanQRComponent() {
               <Text variant="headlineSmall">{phoneNumber}</Text>
               :<Text variant="headlineSmall" style={{opacity: 0.2}}>0000000000</Text>
             }
-            <Link href="/QRScanner" asChild>
+            <Link href={{ pathname: '/QRScanner', params: { numberParam: numberParam }}} asChild>
               <Button icon="qrcode-scan" mode="contained" style={{ flex: 1, maxWidth: 150 }}>
                 Scan
               </Button>

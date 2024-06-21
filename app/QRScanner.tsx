@@ -4,10 +4,17 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Link } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { SearchParamType } from './Dashboard';
+
+import { useItem } from '@/context/itemDataContext';
+import { useLocalSearchParams } from 'expo-router';
 
 type Facing = 'back' | 'front';
 
 export default function QRScanner() {
+
+  const {setPhoneNumber} = useItem();
+  const numberParam = useLocalSearchParams<SearchParamType>().numberParam;
 
   const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState('back' as Facing);
@@ -45,6 +52,14 @@ export default function QRScanner() {
     if(re.test(qr)) {
       setValidQR(true)
       setQR(qr)
+    }
+  }
+
+  function saveNumber() {
+    if(numberParam === 'QRNumber') {
+      setPhoneNumber(QR)
+      setQR('');
+      setValidQR(false);
     }
   }
 
@@ -87,10 +102,7 @@ export default function QRScanner() {
             <Button 
               icon="arrow-right-bold-box-outline" 
               mode="contained" 
-              onPress={() => {
-                setQR('');
-                setValidQR(false);
-              }}
+              onPress={saveNumber}
               disabled={!validQR} 
               >
               Confirm number
