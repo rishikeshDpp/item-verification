@@ -2,6 +2,7 @@ import { View } from 'react-native'
 
 import QRComponent from '@/components/DashboardComponents/QRComponent'
 import MediaComponent from '@/components/DashboardComponents/MediaComponent'
+import SubmitComponent from '@/components/DashboardComponents/SubmitComponent';
 
 export type SearchParamType = {
     numberParam: string;
@@ -21,6 +22,7 @@ export default function Dashboard() {
             }}>
             <QRComponent />
             <MediaComponent/>
+            <SubmitComponent/>
         </View>
     )
 }

@@ -44,12 +44,12 @@ export default function MediaUnit({
             <View>
               <Portal>
                 <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-                  {
-                    unitType === 'image' ?
-                    <Image source={{ uri: source }} style={{ width: '100%', height: '100%'}} />
-                    :
-                    <Video source={{ uri: source }} style={{ width: '100%', height: '100%'}} shouldPlay={true} isLooping={true}/>
-                  }
+                {
+                  unitType === 'image' ?
+                  <Image source={{ uri: source }} style={{ width: '100%', height: '100%'}} />
+                  :
+                  <Video source={{ uri: source }} style={{ width: '100%', height: '100%'}} shouldPlay={true} isLooping={true}/>
+                }
                 </Modal>
               </Portal>
               {
@@ -66,24 +66,13 @@ export default function MediaUnit({
               }
             </View>
 
-            {
-              unitType === 'image' ? 
-              <Link href={{ pathname: '/Camera', params: { mediaParam: mediaParam }}} asChild>
-                <IconButton
-                  icon="camera"
-                  size={40}
-                  mode='contained'
-                />
-              </Link>
-              : 
-              <Link href={{ pathname: '/Camera', params: { mediaParam: mediaParam }}} asChild>
-                <IconButton
-                  icon="video"
-                  size={40}
-                  mode='contained'
-                />
-              </Link>
-            }
+            <Link href={{ pathname: '/Camera', params: { mediaParam: mediaParam }}} asChild>
+              <IconButton
+                icon={unitType === 'image' ? 'camera' : 'video'}
+                size={40}
+                mode='contained'
+              />
+            </Link>
         </Card.Content>
     </Card>
   )

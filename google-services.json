@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "338902225124",
+    "project_id": "item-verification-6b457",
+    "storage_bucket": "item-verification-6b457.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338902225124:android:ee34353ab76a76e10e5cf1",
+        "android_client_info": {
+          "package_name": "com.rishidpp.itemverification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMUjeKrpSUFJfLNHAqh3Izt7PaIOMilJ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
